@@ -1,0 +1,34 @@
+# add TailwindCSS
+- add the following to the main css file:
+    @import "tailwindcss"; 
+    @theme {
+    --font-title: 'Boldonse';
+    --font-goofy: 'Merriweather', sans-serif;
+    --font-body: 'Open Sans', sans-serif;
+    --font-chinese: 'Noto Sans TC', sans-serif;
+    }
+- add fonts to the main css file:
+    @import url('https://fonts.google......swap');
+
+# build routes using vue-router@4 in App.vue
+- for navigation bar, use <router-link> instead of <a>
+- for view, use <router-view> instead of <div>
+- in src/router/index.js, import createRouter and createWebHistory from 'vue-router'
+- import components, and then set up routes.
+    `
+        const routes = [
+        {path: '/', name: 'home', component: Home},
+        ...
+        ]
+        const router = createRouter({
+            history: createWebHistory(),
+            routes
+        })
+        export default router
+    `
+- in main.ts, import router and use it
+    `
+        ...
+        createApp(App).use(router).mount('#app')
+    `
+    

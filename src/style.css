@@ -7,7 +7,11 @@
     --font-goofy: 'Merriweather', sans-serif;
     --font-body: 'Open Sans', sans-serif;
     --font-chinese: 'Noto Sans TC', sans-serif;
+    --color-blue: #1387C0;
+    --color-beige: #FAEDD1;
+    --color-orange: #FD6D2E;
 }
+
 
 .link {
     @apply cursor-pointer hover:underline;

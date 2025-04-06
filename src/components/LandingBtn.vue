@@ -10,10 +10,12 @@ defineProps({
 </script>
 <template>
   <router-link :to="link">
-    <div
-      class="w-[300px] h-[300px] border-2 border-orange-200 rounded-2xl text-4xl bg-orange-300 flex justify-center items-center font-title hover:shadow-2xl"
-    >
-      {{ name }}
+    <div class="w-[110px] h-[55px]">
+      <div
+        class="w-[100px] h-[50px] border-2 border-black rounded-2xl text-xl flex justify-center items-center font-body bg-beige text-black font-bold transition-transform duration-300 hover:scale-110"
+      >
+        {{ name }}
+      </div>
     </div>
   </router-link>
 </template>
