@@ -1,11 +1,24 @@
 <script setup lang="ts">
 import { routes } from '../router';
 import SignOutBtn from './SignOutBtn.vue';
+import { useUIStore } from '../stores/ui';
+import { computed } from 'vue';
+const ui = useUIStore();
+const visibleRoutes = computed(() => {
+    return routes.filter((route) => {
+        if (ui.isLoggedIn) {
+            return route.name !== "Login" && route.name !== "Register"
+        } else {
+            return route.name !== "Feed"
+        }
+    })
+})
+console.log('visibleRoutes: ', visibleRoutes.value)
 </script>
 
 <template>
     <div class="m-4">
-        <span v-for="route in routes" :key="route.path" class="px-2 text-lg font-semibold hover:text-blue active:text-orange">
+        <span v-for="route in visibleRoutes" :key="route.path" class="px-2 text-lg font-semibold hover:text-blue active:text-orange">
             <router-link :to="route.path">{{ route.name }}</router-link>        
         </span>
         <SignOutBtn />

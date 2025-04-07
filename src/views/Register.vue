@@ -33,13 +33,19 @@
       >
         Sign in with Google
       </button>
+      <button
+        class="border p-2 rounded-lg text-center cursor-pointer w-full"
+        @click="handleFacebookSignIn"
+      >
+        Sign in with Facebook
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { useUIStore } from "../stores/ui";
 import PasswordInput from "../components/PasswordInput.vue";
@@ -63,8 +69,9 @@ const register = () => {
     .then((userCredential) => {
       // Signed in
       const user = userCredential.user;
-      console.log(user);
-      router.push("/feed");
+      if (user) {
+        router.push("/feed");
+      }
     })
     .catch((error) => {
       switch (error.code) {
@@ -87,6 +94,28 @@ const register = () => {
     });
 };
 const handleGoogleSignIn = () => {
-  console.log("Sign in with Google");
+  const googleProvider = new GoogleAuthProvider();
+  signInWithPopup(getAuth(), googleProvider)
+    .then((result) => {
+      if (result.user) {
+        router.push("/feed");
+      }
+    })
+    .catch((error) => {
+      console.error("Error signing in with Google: ", error);
+    })
 };
+
+const handleFacebookSignIn = () => {
+  const facebookProvider = new FacebookAuthProvider();
+  signInWithPopup(getAuth(), facebookProvider)
+    .then((result) => {
+      if (result.user) {
+        router.push('/feed')
+      }
+    })
+    .catch((error) => {
+      console.error("Error signing in with Facebook: ", error);
+    })
+}
 </script>

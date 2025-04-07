@@ -24,16 +24,19 @@
         Login
       </button>
       <p class="text-center">or</p>
-      <p class="border p-2 rounded-lg text-center cursor-pointer">
-        <button @click="signInWithGoogle">Sign In With Google</button>
-      </p>
+      <button class="border p-2 rounded-lg text-center cursor-pointer w-full" @click="signInWithGoogle">
+        Sign In With Google
+      </button>
+      <button class="border p-2 rounded-lg text-center cursor-pointer w-full" @click="signInWithFacebook">
+        Sign In With Facebook
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { useUIStore } from "../stores/ui";
 import PasswordInput from "../components/PasswordInput.vue";
@@ -43,6 +46,8 @@ const password = ref("");
 const errorMsg = ref("");
 const router = useRouter();
 const ui = useUIStore();
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
 const login = () => {
   ui.isLoading = true;
@@ -51,11 +56,15 @@ const login = () => {
     .then((userCredential) => {
       // Signed in
       const user = userCredential.user;
-      console.log("user", user);
-      router.push("/feed");
+      if (user) {
+        router.push("/feed");
+      }
     })
     .catch((error) => {
       switch (error.code) {
+        case "auth/invalid-email":
+          errorMsg.value = "Invalid email address";
+          break;
         case "auth/user-not-found":
           errorMsg.value = "User not found";
           break;
@@ -72,6 +81,27 @@ const login = () => {
     });
 };
 const signInWithGoogle = () => {
-  console.log("Sign in with Google");
+  signInWithPopup(getAuth(), googleProvider)
+    .then((result) => {
+      const user = result.user;
+      if (user) {
+        router.push("/feed");
+      }
+    })
+    .catch((error) => {
+      console.error("Error signing in with Google: ", error);
+    });
 };
+const signInWithFacebook = () => {
+  signInWithPopup(getAuth(), facebookProvider)
+    .then((result) => {
+      const user = result.user;
+      if (user) {
+        router.push("/feed");
+      }
+    })
+    .catch((error) => {
+      console.error("Error signing in with Facebook: ", error);
+    })
+}
 </script>

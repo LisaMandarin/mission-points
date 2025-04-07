@@ -2,8 +2,12 @@
 import DesktopNav from './components/DesktopNav.vue';
 import { useUIStore } from './stores/ui';
 import Loading from './components/Loading.vue';
+import { onAuthStateChanged, getAuth } from 'firebase/auth';
 
 const ui = useUIStore();
+onAuthStateChanged(getAuth(), (user) => {
+  ui.isLoggedIn = !!user
+})
 </script>
 
 <template>
