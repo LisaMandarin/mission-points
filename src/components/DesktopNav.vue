@@ -13,7 +13,7 @@ const visibleRoutes = computed(() => {
         }
     })
 })
-console.log('visibleRoutes: ', visibleRoutes.value)
+
 </script>
 
 <template>
