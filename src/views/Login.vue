@@ -18,16 +18,22 @@
         <PasswordInput v-model:password="password" />
       </p>
       <button
-        @click="login"
+        @click="handleLogin"
         class="border p-2 rounded-lg text-center cursor-pointer w-full"
       >
         Login
       </button>
       <p class="text-center">or</p>
-      <button class="border p-2 rounded-lg text-center cursor-pointer w-full" @click="signInWithGoogle">
+      <button
+        class="border p-2 rounded-lg text-center cursor-pointer w-full"
+        @click="handleOauthLogin('google')"
+      >
         Sign In With Google
       </button>
-      <button class="border p-2 rounded-lg text-center cursor-pointer w-full" @click="signInWithFacebook">
+      <button
+        class="border p-2 rounded-lg text-center cursor-pointer w-full"
+        @click="handleOauthLogin('facebook')"
+      >
         Sign In With Facebook
       </button>
     </div>
@@ -36,72 +42,58 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { useUIStore } from "../stores/ui";
 import PasswordInput from "../components/PasswordInput.vue";
+import { useUserStore } from "../stores/user";
 
 const email = ref("");
 const password = ref("");
 const errorMsg = ref("");
 const router = useRouter();
 const ui = useUIStore();
-const googleProvider = new GoogleAuthProvider();
-const facebookProvider = new FacebookAuthProvider();
+const userStore = useUserStore();
 
-const login = () => {
+const handleLogin = async () => {
   ui.isLoading = true;
   errorMsg.value = "";
-  signInWithEmailAndPassword(getAuth(), email.value, password.value)
-    .then((userCredential) => {
-      // Signed in
-      const user = userCredential.user;
-      if (user) {
-        router.push("/");
-      }
-    })
-    .catch((error) => {
-      switch (error.code) {
-        case "auth/invalid-email":
-          errorMsg.value = "Invalid email address";
-          break;
-        case "auth/user-not-found":
-          errorMsg.value = "User not found";
-          break;
-        case "auth/wrong-password":
-          errorMsg.value = "Wrong password";
-          break;
-        default:
-          errorMsg.value = "An error occurred. Please try again.";
-          break;
-      }
-    })
-    .finally(() => {
-      ui.isLoading = false;
-    });
+  try {
+    await userStore.login(email.value, password.value);
+    router.push("/");
+  } catch (error: any) {
+    switch (error.code) {
+      case "auth/invalid-email":
+        errorMsg.value = "Invalid email address";
+        break;
+      case "auth/user-not-found":
+        errorMsg.value = "User not found";
+        break;
+      case "auth/wrong-password":
+        errorMsg.value = "Wrong password";
+        break;
+      default:
+        errorMsg.value = "An error occurred. Please try again.";
+        break;
+    }
+  } finally {
+    ui.isLoading = false;
+  }
 };
-const signInWithGoogle = () => {
-  signInWithPopup(getAuth(), googleProvider)
-    .then((result) => {
-      const user = result.user;
-      if (user) {
-        router.push("/");
-      }
-    })
-    .catch((error) => {
-      console.error("Error signing in with Google: ", error);
-    });
+
+const handleOauthLogin = async (provider: string) => {
+  ui.isLoading = true;
+  errorMsg.value = "";
+  try {
+    await userStore.oauthLogin(provider);
+    router.push("/");
+  } catch (error) {
+    if (error instanceof Error) {
+      errorMsg.value = error.message
+    } else {
+      errorMsg.value = String(error)
+    }
+  } finally {
+    ui.isLoading = false;
+  }
 };
-const signInWithFacebook = () => {
-  signInWithPopup(getAuth(), facebookProvider)
-    .then((result) => {
-      const user = result.user;
-      if (user) {
-        router.push("/");
-      }
-    })
-    .catch((error) => {
-      console.error("Error signing in with Facebook: ", error);
-    })
-}
 </script>
