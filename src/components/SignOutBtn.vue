@@ -35,7 +35,7 @@ onMounted(() => {
   <button
     v-if="isLoggedIn"
     @click="handleSignOut"
-    class="px-2 text-lg font-semibold hover:text-blue active:text-orange cursor-pointer"
+    class="px-2 text-lg md:text-2xl font-semibold hover:text-blue active:text-orange cursor-pointer"
   >
     Sign Out
   </button>

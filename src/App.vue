@@ -14,7 +14,7 @@ onAuthStateChanged(getAuth(), (user) => {
 </script>
 
 <template>
-  <div class="bg-beige flex flex-col h-screen">
+  <div class="bg-beige flex flex-col h-screen font-body">
     <DesktopNav />
     <div class="relative flex-grow">
       <Loading :loading="ui.isLoading" />

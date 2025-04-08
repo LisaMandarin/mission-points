@@ -16,3 +16,6 @@
 .link {
     @apply cursor-pointer hover:underline;
 }
+.div-center {
+    @apply h-full flex flex-col justify-center items-center
+}
