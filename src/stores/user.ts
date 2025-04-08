@@ -10,7 +10,7 @@ import {
   signOut,
   type User,
 } from "firebase/auth";
-import { setDoc, getDoc, doc } from "firebase/firestore";
+import { setDoc, getDoc, updateDoc, doc } from "firebase/firestore";
 
 const setUser = async (
   user: User,
@@ -99,5 +99,24 @@ export const useUserStore = defineStore("user", () => {
     userData.value = null;
   }
 
-  return { user, register, oauthRegister, login, oauthLogin, logout };
+  async function updateUser(name: string, role: string) {
+    if (user.value) {
+      await updateDoc(doc(db, "users", user.value.uid), {
+        name,
+        role,
+      });
+      await getUser(user.value, userData)
+    }
+  }
+
+  return {
+    user,
+    userData,
+    register,
+    oauthRegister,
+    login,
+    oauthLogin,
+    logout,
+    updateUser,
+  };
 });

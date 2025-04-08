@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUIStore } from '../stores/ui';
+import { auth } from '../firebase';
 
 const isLoggedIn = ref(true);
 const router = useRouter();
-const auth = getAuth();
 const ui = useUIStore();
 
 const handleSignOut = () => {
