@@ -57,7 +57,7 @@ const login = () => {
       // Signed in
       const user = userCredential.user;
       if (user) {
-        router.push("/feed");
+        router.push("/");
       }
     })
     .catch((error) => {
@@ -85,7 +85,7 @@ const signInWithGoogle = () => {
     .then((result) => {
       const user = result.user;
       if (user) {
-        router.push("/feed");
+        router.push("/");
       }
     })
     .catch((error) => {
@@ -97,7 +97,7 @@ const signInWithFacebook = () => {
     .then((result) => {
       const user = result.user;
       if (user) {
-        router.push("/feed");
+        router.push("/");
       }
     })
     .catch((error) => {

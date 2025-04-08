@@ -1,3 +1,3 @@
 <template>
-    Feed
+    Dashboard
 </template>

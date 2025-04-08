@@ -70,7 +70,7 @@ const register = () => {
       // Signed in
       const user = userCredential.user;
       if (user) {
-        router.push("/feed");
+        router.push("/");
       }
     })
     .catch((error) => {
@@ -98,7 +98,7 @@ const handleGoogleSignIn = () => {
   signInWithPopup(getAuth(), googleProvider)
     .then((result) => {
       if (result.user) {
-        router.push("/feed");
+        router.push("/");
       }
     })
     .catch((error) => {
@@ -111,7 +111,7 @@ const handleFacebookSignIn = () => {
   signInWithPopup(getAuth(), facebookProvider)
     .then((result) => {
       if (result.user) {
-        router.push('/feed')
+        router.push('/')
       }
     })
     .catch((error) => {

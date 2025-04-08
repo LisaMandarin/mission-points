@@ -9,7 +9,7 @@ const visibleRoutes = computed(() => {
         if (ui.isLoggedIn) {
             return route.name !== "Login" && route.name !== "Register"
         } else {
-            return route.name !== "Feed"
+            return route.name !== "Dashboard"
         }
     })
 })
