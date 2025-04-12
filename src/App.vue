@@ -11,7 +11,6 @@ const ui = useUIStore();
 const userStore = useUserStore();
 
 onAuthStateChanged(auth, async(user) => {
-  console.log('user: ', user)
   ui.isLoggedIn = !!user;
   userStore.user = user;
   if (user) {

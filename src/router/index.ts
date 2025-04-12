@@ -1,31 +1,38 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
-import Login from '../views/Login.vue';
-import Register from '../views/Register.vue';
+import Login from "../views/Login.vue";
+import Register from "../views/Register.vue";
 import Dashboard from "../views/Dashboard.vue";
+import { dashboardRoutes } from "./dashboard-routes";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export const routes = [
-    { path: '/', name: "Home", component: Home},
-    { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: {requiresAuth: true} },
-    { path: '/login', name: 'Login', component: Login },
-    { path: '/register', name: 'Register', component: Register },
-]
+  { path: "/", name: "Home", component: Home },
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component: Dashboard,
+    meta: { requiresAuth: true },
+    children: dashboardRoutes,
+  },
+  { path: "/login", name: "Login", component: Login },
+  { path: "/register", name: "Register", component: Register },
+];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes
-})
+  history: createWebHistory(),
+  routes,
+});
 router.beforeEach((to, _, next) => {
-    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-        unsubscribe();
-        if (requiresAuth && !user) {
-            return next('/login');
-        } else {
-            return next();
-        }
-    });
-})
-export default router
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const auth = getAuth();
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    unsubscribe();
+    if (requiresAuth && !user) {
+      return next("/login");
+    } else {
+      return next();
+    }
+  });
+});
+export default router;
