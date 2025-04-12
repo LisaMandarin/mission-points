@@ -4,7 +4,7 @@ import Loading from "./components/Loading.vue";
 import { auth } from "./firebase";
 import { useUIStore } from "./stores/ui";
 import { useUserStore } from "./stores/user";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { getUser } from "./stores/user";
 
 const ui = useUIStore();
