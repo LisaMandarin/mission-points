@@ -12,30 +12,14 @@ import {
 } from "firebase/auth";
 import { setDoc, getDoc, updateDoc, doc } from "firebase/firestore";
 
-const setUser = async (
+export const getUser = async (
   user: User,
-  userData: Ref<null | Record<string, any>>
-) => {
-  await setDoc(doc(db, "users", user.uid), {
-    uid: user.uid,
-    email: user.email,
-    createdAt: new Date(),
-  });
-
-  userData.value = {
-    uid: user.uid,
-    email: user.email,
-  };
-};
-
-const getUser = async (
-  user: User,
-  userData: Ref<null | Record<string, any>>
 ) => {
   const result = await getDoc(doc(db, "users", user.uid));
   if (result.exists()) {
-    userData.value = result.data();
+    return result.data();
   }
+  return null;
 };
 
 export const useUserStore = defineStore("user", () => {
@@ -43,6 +27,22 @@ export const useUserStore = defineStore("user", () => {
   const userData = ref<null | Record<string, any>>(null);
   const googleProvider = new GoogleAuthProvider();
   const facebookProvider = new FacebookAuthProvider();
+
+  const setUser = async (
+    user: User,
+    userData: Ref<null | Record<string, any>>
+  ) => {
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      email: user.email,
+      createdAt: new Date(),
+    });
+  
+    userData.value = {
+      uid: user.uid,
+      email: user.email,
+    };
+  };
 
   async function register(email: string, password: string) {
     const userCredential = await createUserWithEmailAndPassword(
@@ -77,7 +77,7 @@ export const useUserStore = defineStore("user", () => {
     );
     user.value = userCredential.user;
 
-    await getUser(user.value, userData);
+    userData.value = await getUser(user.value);
   }
 
   async function oauthLogin(provider: string) {
@@ -89,7 +89,7 @@ export const useUserStore = defineStore("user", () => {
     }
     if (userCredential?.user) {
       user.value = userCredential.user;
-      await getUser(user.value, userData);
+      await getUser(user.value);
     }
   }
 
@@ -105,7 +105,7 @@ export const useUserStore = defineStore("user", () => {
         name,
         role,
       });
-      await getUser(user.value, userData)
+      await getUser(user.value)
     }
   }
 
