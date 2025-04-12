@@ -6,7 +6,6 @@ import { useUIStore } from "./stores/ui";
 import { useUserStore } from "./stores/user";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { getUser } from "./stores/user";
-import { watchEffect } from "vue";
 
 const ui = useUIStore();
 const userStore = useUserStore();
