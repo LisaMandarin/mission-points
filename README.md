@@ -1,5 +1,13 @@
-# Vue 3 + TypeScript + Vite
+# Inspiration
+This application was inspired by my desire to build an allowance and reward system for my daughter.  The more chores and achievements she completes, the more rewarding points she earns from me as her mother and from her father.  The project is still under active development.
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+# Tech Stack
+- Vue 3
+- Firebase
+- Pinia
+- Tailwind CSS
+- Ant Design Vue
+- TypeScript
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+# Production Site 
+[https://mission-points.web.app/](https://mission-points.web.app/)

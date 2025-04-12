@@ -105,7 +105,11 @@ export const useUserStore = defineStore("user", () => {
         name,
         role,
       });
-      await getUser(user.value)
+      const updatedUser = await getUser(user.value)
+      if (updatedUser) {
+        userData.value = updatedUser;
+      }
+      
     }
   }
 

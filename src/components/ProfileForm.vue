@@ -1,15 +1,23 @@
 <script setup lang="ts">
 import { message } from "ant-design-vue";
 import { useUserStore } from "../stores/user";
-import { ref } from "vue";
+import { useUIStore } from "../stores/ui";
+import { useRouter } from "vue-router";
+import { computed, ref, watchEffect } from "vue";
+import type { UserDataType } from "../types";
 
+const router = useRouter();
+const ui = useUIStore();
 const userStore = useUserStore();
-const userData = userStore.userData;
-const name = ref(userData?.name);
-const role = ref(userData?.role);
+const userData = computed<UserDataType | null>(
+  () => userStore.userData as UserDataType | null
+);
+const name = ref('');
+const role = ref('');
 
 const handleSubmit = async (e: Event) => {
   e.preventDefault();
+  ui.isLoading = true;
   if (name.value === "") {
     message.error("Name can't be empty");
   }
@@ -20,15 +28,24 @@ const handleSubmit = async (e: Event) => {
     try {
       await userStore.updateUser(name.value, role.value);
       message.success("User profile updated");
+      router.push('/dashboard');
     } catch (error) {
       if (error instanceof Error) {
         message.error(error.message);
       } else {
         message.error(String(error));
       }
+    } finally {
+      ui.isLoading = false;
     }
   }
 };
+watchEffect(() => {
+  if (userData.value) {
+    name.value = userData.value.name;
+    role.value = userData.value.role;
+  }
+})
 </script>
 
 <template>
@@ -57,6 +74,7 @@ const handleSubmit = async (e: Event) => {
         <option value="">Choose</option>
         <option value="parent">Parent</option>
         <option value="child">Child</option>
+        <option value="other">Other</option>
       </select>
     </div>
     <div class="text-center">
