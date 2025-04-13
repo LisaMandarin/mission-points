@@ -2,13 +2,22 @@
 import { routes } from "../router";
 import SignOutBtn from "./SignOutBtn.vue";
 import { useUIStore } from "../stores/ui";
-import { computed } from "vue";
+import { useUserStore } from "../stores/user";
+import { computed, ref } from "vue";
 const ui = useUIStore();
+const userStore = useUserStore();
+const warningMsg = ref("");
+const userData = computed(() => userStore.userData);
 const visibleRoutes = computed(() => {
   return routes.filter((route) => {
-    if (ui.isLoggedIn) {
+    if (ui.isLoggedIn && userData.value !== null) {
+      warningMsg.value = "";
       return route.name !== "Login" && route.name !== "Register";
+    } else if (ui.isLoggedIn && userData.value === null) {
+      warningMsg.value = "Please register to set up everything!!";
+      return route.name === "Register";
     } else {
+      warningMsg.value = "";
       return route.name !== "Dashboard";
     }
   });
@@ -25,6 +34,11 @@ const visibleRoutes = computed(() => {
       >
         <router-link :to="route.path">{{ route.name }}</router-link>
       </span>
+      <span
+        v-if="warningMsg"
+        class="text-red-600 animate__animated animate__flash animate__infinite infinite"
+        >{{ warningMsg }}</span
+      >
     </div>
     <div>
       <SignOutBtn />

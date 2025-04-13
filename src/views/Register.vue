@@ -1,10 +1,68 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import PasswordInput from "../components/PasswordInput.vue";
+import { useUIStore } from "../stores/ui";
+import { useUserStore } from "../stores/user";
+import { errorCodeMap } from "../utils/errorCode";
+import { message } from "ant-design-vue";
+
+const email = ref("");
+const password = ref("");
+const confirmPassword = ref("");
+const errorMsg = ref("");
+const ui = useUIStore();
+const userStore = useUserStore();
+const router = useRouter();
+
+const handleRegister = async () => {
+  ui.isLoading = true;
+  errorMsg.value = "";
+  console.log(password.value);
+  console.log(confirmPassword.value);
+  if (password.value !== confirmPassword.value) {
+    errorMsg.value = "Passwords do not match";
+    ui.isLoading = false;
+    return;
+  }
+
+  try {
+    await userStore.register(email.value, password.value);
+    message.success("Welcome!  You've successfully signed in.");
+    router.push("/");
+  } catch (error: any) {
+    errorMsg.value =
+      errorCodeMap[error.code as keyof typeof errorCodeMap] ||
+      "An error occurred. Please try again.";
+  } finally {
+    ui.isLoading = false;
+  }
+};
+const handleOauthRegister = async (provider: string) => {
+  ui.isLoading = true;
+  errorMsg.value = "";
+
+  try {
+    await userStore.oauthRegister(provider);
+    message.success("Welcome!  You've successfully signed in.");
+    router.push("/");
+  } catch (error: any) {
+    errorMsg.value =
+      errorCodeMap[error.code as keyof typeof errorCodeMap] ||
+      "Something went wrong.  Please try again.";
+  } finally {
+    ui.isLoading = false;
+  }
+};
+</script>
+
 <template>
   <div class="relative w-[300px] mx-auto">
     <h1 class="text-center text-2xl font-bold font-goofy my-4">Registration</h1>
 
     <!-- Form -->
     <div class="space-y-4">
-      <p v-if="errorMsg" class="text-red-600">{{ errorMsg }}</p>
+      <p v-if="errorMsg" class="text-red-600 text-center">{{ errorMsg }}</p>
       <p class="border p-2 rounded-lg">
         <input
           type="email"
@@ -26,6 +84,11 @@
       >
         Register
       </button>
+      <p class="hover:underline text-blue-600">
+        <router-link :to="'/login'">
+          Have an account already? Login!
+        </router-link>
+      </p>
       <p class="text-center">or</p>
       <button
         class="border p-2 rounded-lg text-center cursor-pointer w-full"
@@ -42,74 +105,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import PasswordInput from "../components/PasswordInput.vue";
-import { useUIStore } from "../stores/ui";
-import { useUserStore } from "../stores/user";
-
-const email = ref("");
-const password = ref("");
-const confirmPassword = ref("");
-const errorMsg = ref("");
-const ui = useUIStore();
-const userStore = useUserStore();
-const router = useRouter();
-
-const handleRegister = async() => {
-  ui.isLoading = true;
-  errorMsg.value = "";
-
-  if (password.value !== confirmPassword.value) {
-    errorMsg.value = "Passwords do not match";
-    ui.isLoading = false;
-    return;
-  }
-
-  try {
-    await userStore.register(email.value, password.value)
-    router.push('/')
-  } catch (error: any) {
-    switch (error.code) {
-      case "auth/invalid-email":
-        errorMsg.value = "Invalid email address";
-        break;
-      case "auth/missing-password":
-        errorMsg.value = "Please enter a password";
-        break;
-      case "auth/weak-password":
-        errorMsg.value = "Password should be at least 6 characters";
-        break;
-      case "auth/email-already-in-use":
-        errorMsg.value = "This email is already registered"
-        break;
-      default:
-        errorMsg.value = "An error occurred. Please try again.";
-        break;
-      }
-  } finally {
-    ui.isLoading = false;
-  }
-
-};
-const handleOauthRegister = async(provider: string) => {
-  ui.isLoading = true;
-  errorMsg.value = "";
-
-  try {
-    await userStore.oauthRegister(provider)
-    router.push('/')
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      errorMsg.value = error.message
-    } else {
-      errorMsg.value = String(error);
-    }
-  } finally {
-    ui.isLoading = false
-  }
-};
-
-</script>

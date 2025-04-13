@@ -5,7 +5,6 @@ import { auth } from "./firebase";
 import { useUIStore } from "./stores/ui";
 import { useUserStore } from "./stores/user";
 import { onAuthStateChanged } from "firebase/auth";
-import { getUser } from "./stores/user";
 
 const ui = useUIStore();
 const userStore = useUserStore();
@@ -14,7 +13,7 @@ onAuthStateChanged(auth, async(user) => {
   ui.isLoggedIn = !!user;
   userStore.user = user;
   if (user) {
-    userStore.userData = await getUser(user)
+    userStore.userData = await userStore.getUser(user);
   }
 });
 

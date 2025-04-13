@@ -31,6 +31,6 @@ const userData = computed<UserDataType | null>(
         </router-link>
       </span>
     </div>
-    <DashboardTable :userData="userData" />
+    <DashboardTable/>
   </div>
 </template>

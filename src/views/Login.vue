@@ -1,3 +1,49 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useUIStore } from "../stores/ui";
+import PasswordInput from "../components/PasswordInput.vue";
+import { useUserStore } from "../stores/user";
+import { errorCodeMap } from "../utils/errorCode";
+
+const email = ref("");
+const password = ref("");
+const errorMsg = ref("");
+const router = useRouter();
+const ui = useUIStore();
+const userStore = useUserStore();
+
+const handleLogin = async () => {
+  ui.isLoading = true;
+  errorMsg.value = "";
+  try {
+    await userStore.login(email.value, password.value);
+    router.push("/");
+  } catch (error: any) {
+    errorMsg.value = errorCodeMap[error.code as keyof typeof errorCodeMap] || "An error occurred.  Please try again."
+  } finally {
+    ui.isLoading = false;
+  }
+};
+
+const handleOauthLogin = async (provider: string) => {
+  ui.isLoading = true;
+  errorMsg.value = "";
+  try {
+    await userStore.oauthLogin(provider);
+    router.push("/");
+  } catch (error) {
+    if (error instanceof Error) {
+      errorMsg.value = error.message
+    } else {
+      errorMsg.value = String(error)
+    }
+  } finally {
+    ui.isLoading = false;
+  }
+};
+</script>
+
 <template>
   <div class="w-[300px] mx-auto space-y-4">
     <h1 class="text-center text-2xl font-bold font-goofy mt-4">Login</h1>
@@ -23,6 +69,11 @@
       >
         Login
       </button>
+      <p class="hover:underline text-blue-600">
+        <router-link :to="'register'">
+          Don't have an account yet? Regiseter first!
+        </router-link>
+      </p>
       <p class="text-center">or</p>
       <button
         class="border p-2 rounded-lg text-center cursor-pointer w-full"
@@ -39,61 +90,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useUIStore } from "../stores/ui";
-import PasswordInput from "../components/PasswordInput.vue";
-import { useUserStore } from "../stores/user";
-
-const email = ref("");
-const password = ref("");
-const errorMsg = ref("");
-const router = useRouter();
-const ui = useUIStore();
-const userStore = useUserStore();
-
-const handleLogin = async () => {
-  ui.isLoading = true;
-  errorMsg.value = "";
-  try {
-    await userStore.login(email.value, password.value);
-    router.push("/");
-  } catch (error: any) {
-    switch (error.code) {
-      case "auth/invalid-email":
-        errorMsg.value = "Invalid email address";
-        break;
-      case "auth/user-not-found":
-        errorMsg.value = "User not found";
-        break;
-      case "auth/wrong-password":
-        errorMsg.value = "Wrong password";
-        break;
-      default:
-        errorMsg.value = "An error occurred. Please try again.";
-        break;
-    }
-  } finally {
-    ui.isLoading = false;
-  }
-};
-
-const handleOauthLogin = async (provider: string) => {
-  ui.isLoading = true;
-  errorMsg.value = "";
-  try {
-    await userStore.oauthLogin(provider);
-    router.push("/");
-  } catch (error) {
-    if (error instanceof Error) {
-      errorMsg.value = error.message
-    } else {
-      errorMsg.value = String(error)
-    }
-  } finally {
-    ui.isLoading = false;
-  }
-};
-</script>
