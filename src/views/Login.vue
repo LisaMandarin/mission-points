@@ -30,7 +30,7 @@ const handleOauthLogin = async (provider: string) => {
   ui.isLoading = true;
   errorMsg.value = "";
   try {
-    await userStore.oauthLogin(provider);
+    await userStore.oauthLogin(provider, false);
     router.push("/");
   } catch (error) {
     if (error instanceof Error) {

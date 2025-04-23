@@ -2,14 +2,10 @@
 import { UserOutlined } from "@ant-design/icons-vue";
 import { BiEdit } from "vue-icons-plus/bi";
 import { useUserStore } from "../stores/user";
-import { computed } from "vue";
 import DashboardTable from "../components/DashboardTable.vue";
-import type { UserDataType } from "../types";
 
 const userStore = useUserStore();
-const userData = computed<UserDataType | null>(
-  () => userStore.userData as UserDataType | null
-);
+
 </script>
 
 <template>
@@ -20,7 +16,7 @@ const userData = computed<UserDataType | null>(
 
     <div>
       <span v-if="!userStore.userData">Loading...</span>
-      <span v-else>{{ userData?.email }}</span>
+      <span v-else>{{ userStore.userData?.email }}</span>
     </div>
 
     <div class="flex items-baseline">

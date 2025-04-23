@@ -3,21 +3,30 @@ import { message } from "ant-design-vue";
 import { useUserStore } from "../stores/user";
 import { useUIStore } from "../stores/ui";
 import { useRouter } from "vue-router";
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref, watchEffect} from "vue";
 import { customAlphabet } from "nanoid";
 
 const router = useRouter();
 const ui = useUIStore();
 const userStore = useUserStore();
-const userData = computed(() => userStore.userData);
+const userData = computed(() => userStore.userData)
 const nanoid = customAlphabet('123456789abcderfghijklmnpqrstuvwxyz', 4) // generate 4-character home code
 
 const name = ref("");
 const role = ref("");
 const homeAction = ref<"create" | "join" | "">("");
-const homeCode = ref(userData.value?.homeCode);
-const newHomeCode = nanoid();
+const homeID = ref("");
+const newHomeID = nanoid();
 const errorMsg = ref("");
+
+watchEffect(() => {
+  if (userData.value) {
+    name.value = userData.value.name || ""
+    role.value = userData.value.role || ""
+    homeID.value = userData.value.homeID || ""
+    homeAction.value = userData.value.homeID ? "join" : "create"
+  }
+});
 
 const handleSubmit = async (e: Event) => {
   e.preventDefault();
@@ -31,21 +40,23 @@ const handleSubmit = async (e: Event) => {
       throw new Error("Please choose a role");
     }
     
-    let homeCodeToUse = "";
+    let finalHomeID;
     if (homeAction.value === "create") {
-      homeCodeToUse = newHomeCode;
-      if (userData.value) {
-        await userStore.setHome(homeCodeToUse)
-      } else {
-        throw new Error("Error during fetching user data.  Please try again")
-      }
+      finalHomeID = newHomeID;
+      await userStore.setHome(finalHomeID)  
     } else if (homeAction.value === "join") {
-      homeCodeToUse = homeCode.value
+      finalHomeID = homeID.value
     }
-    if (homeCodeToUse ==="") {
+    if (homeID.value ==="") {
       throw new Error("Please choose home setup")
     }
-    await userStore.updateUser(name.value, role.value, homeCodeToUse);
+
+    const updates = {
+      name: name.value,
+      role: role.value,
+      homeID: finalHomeID
+    }
+    await userStore.updateUser(updates);
     message.success("User profile updated");
     router.push("/dashboard");
   } catch (error) {
@@ -58,12 +69,7 @@ const handleSubmit = async (e: Event) => {
     ui.isLoading = false;
   }
 };
-watchEffect(() => {
-  if (userData.value) {
-    name.value = userData.value.name ?? "";
-    role.value = userData.value.role ?? "";
-  }
-});
+
 </script>
 
 <template>
@@ -98,7 +104,7 @@ watchEffect(() => {
     </div>
     <div class="flex flex-col">
       <label>Home Setup</label>
-      <div class="flex flex-col">
+      <div class="flex flex-col border border-blue px-4 md:px-8 py-2 md:py-4 rounded-lg">
         <label class="cursor-pointer">
           <input type="radio" value="create" v-model="homeAction"/>
           Create a home
@@ -109,10 +115,10 @@ watchEffect(() => {
         </label>
         <div v-if="homeAction === 'create'" class="mt-4 text-lg md:text-2xl font-goofy">
           <span>Your invitation code:</span>
-          <span class="text-blue pl-2">{{ newHomeCode }}</span>
+          <span class="text-blue pl-2">{{ newHomeID }}</span>
         </div>
         <div v-else-if="homeAction === 'join'" class="mt-4 text-lg md:text-2xl font-goofy">
-          <input type="text" v-model="homeCode" placeholder="Enter home code" class="border border-blue px-4 md:px-8 py-2 md:py-4 rounded-lg"/>
+          <input type="text" v-model="homeID" placeholder="Enter home ID" class="border border-blue px-4 md:px-8 py-2 md:py-4 rounded-lg"/>
         </div>
       </div>
     </div>

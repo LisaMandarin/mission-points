@@ -10,10 +10,11 @@ const ui = useUIStore();
 const userStore = useUserStore();
 
 onAuthStateChanged(auth, async(user) => {
+  console.log('auth state changed')
   ui.isLoggedIn = !!user;
   userStore.user = user;
   if (user) {
-    userStore.userData = await userStore.getUser(user);
+    await userStore.fetchUserProfile(user)
   }
 });
 

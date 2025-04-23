@@ -12,125 +12,122 @@ import {
 } from "firebase/auth";
 import { setDoc, getDoc, updateDoc, doc,  } from "firebase/firestore";
 
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
+
 export const useUserStore = defineStore("user", () => {
-  const user = ref<null | User>(null);
-  const userData = ref<null | Record<string, any>>(null);
-  const googleProvider = new GoogleAuthProvider();
-  const facebookProvider = new FacebookAuthProvider();
-
-  const setUser = async (user: User) => {
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      email: user.email,
+  const user = ref<null | User>(null);   // Firebase auth user
+  const userData = ref<null | Record<string, any>>(null);   // Firestore profile
+  
+  /* ****************************
+  Save basic profile to Firebase
+  **************************** */
+  const saveUserProfile = async (firebaseUser: User) => {  
+    const profile = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
       createdAt: new Date(),
-    });
+    }
+    await setDoc(doc(db, "users", firebaseUser.uid), profile, {merge: true});
 
-    userData.value = {
-      uid: user.uid,
-      email: user.email,
-    };
+    userData.value = profile;
   };
 
-  const getUser = async (user: User) => {
-    const result = await getDoc(doc(db, "users", user.uid));
-    if (result.exists()) {
-      return result.data();
+  /* ****************************
+  Fetch Firestore user profile
+  **************************** */
+  const fetchUserProfile = async (firebaseUser: User) => {
+    const profileDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+    if (profileDoc.exists()) {
+      userData.value = profileDoc.data();
+    } else {
+      userData.value = null;
     }
-    return null;
   };
 
-  const updateUserData = async() => {
-    if (user.value) {
-      const foundUser = await getUser(user.value)
-      if (foundUser) {
-        userData.value = foundUser
-      } else {
-        userData.value = null
-      }
-    }
-  }
+
+  /* ****************************
+  Register with Email/Password
+  **************************** */
   async function register(email: string, password: string) {
-    const userCredential = await createUserWithEmailAndPassword(
+    const {user: firebaseUser} = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
-    user.value = userCredential.user;
+    user.value = firebaseUser;
 
-    await setUser(user.value);
+    await saveUserProfile(firebaseUser);
   }
 
-  async function oauthRegister(provider: string) {
-    let userCredential;
-    if (provider === "google") {
-      userCredential = await signInWithPopup(auth, googleProvider);
-    } else if (provider === "facebook") {
-      userCredential = await signInWithPopup(auth, facebookProvider);
-    }
-    if (userCredential?.user) {
-      user.value = userCredential.user;
-      await setUser(user.value);
+   /* ****************************
+  Register/Login with Google or Facebook
+  **************************** */
+  async function oauthLogin(provider: string, isRegister: boolean) {
+    const selectedProvider = provider === "google" ? googleProvider : facebookProvider;
+    const {user: firebaseUser} = await signInWithPopup(auth, selectedProvider);
+    user.value = firebaseUser
+
+    if (isRegister) {
+      await saveUserProfile(firebaseUser)
+    } else {
+      await fetchUserProfile(firebaseUser);
     }
   }
 
+  /* ****************************
+  Login with Email/Password
+  **************************** */
   async function login(email: string, password: string) {
-    user.value = null;
-    const userCredential = await signInWithEmailAndPassword(
+    const {user: firebaseUser} = await signInWithEmailAndPassword(
       auth,
       email,
       password
     );
-    user.value = userCredential.user;
-    await updateUserData()
+    user.value = firebaseUser;
+    await fetchUserProfile(firebaseUser);
   }
 
-  async function oauthLogin(provider: string) {
-    let userCredential;
-    if (provider === "google") {
-      userCredential = await signInWithPopup(auth, googleProvider);
-    } else if (provider === "facebook") {
-      userCredential = await signInWithPopup(auth, facebookProvider);
-    }
-    if (userCredential?.user) {
-      user.value = userCredential.user;
-      await updateUserData();
-    }
-  }
-
+  /* ****************************
+  Logout
+  **************************** */
   async function logout() {
     await signOut(auth);
     user.value = null;
     userData.value = null;
   }
 
-  async function updateUser(name: string, role: string, homeCode: string) {
-    if (user.value) {
-      await updateDoc(doc(db, "users", user.value.uid), {
-        name,
-        role,
-        homeCode,
-      });
-      await updateUserData();
-    }
+  /* ****************************
+  Update Firestore profile fields
+  **************************** */
+  async function updateUser(updates: Partial<Record<string, any>>) {
+    if (!user.value) return;
+
+    await updateDoc(doc(db, "users", user.value.uid), updates);
+    await fetchUserProfile(user.value);
   }
 
-  async function setHome(homeCodeToUse: string) {
-    await setDoc(doc(db, "homes", homeCodeToUse), {
-      uid: homeCodeToUse,
+  /* ****************************
+  Create a Home document
+  **************************** */
+  async function setHome(homeID: string) {
+    if (!user.value) return;
+    await setDoc(doc(db, "homes", homeID), {
+      uid: homeID,
       createdAt: new Date(),
-      ownerID: user.value?.uid,
+      ownerID: user.value.uid,
     });
-    await updateUserData()
+    await fetchUserProfile(user.value);
   }
 
   return {
     user,
     userData,
-    getUser,
+    saveUserProfile,
+    fetchUserProfile,
     register,
-    oauthRegister,
-    login,
     oauthLogin,
+    login,
     logout,
     updateUser,
     setHome,

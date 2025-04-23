@@ -18,8 +18,7 @@ const router = useRouter();
 const handleRegister = async () => {
   ui.isLoading = true;
   errorMsg.value = "";
-  console.log(password.value);
-  console.log(confirmPassword.value);
+  
   if (password.value !== confirmPassword.value) {
     errorMsg.value = "Passwords do not match";
     ui.isLoading = false;
@@ -39,11 +38,12 @@ const handleRegister = async () => {
   }
 };
 const handleOauthRegister = async (provider: string) => {
+  
   ui.isLoading = true;
   errorMsg.value = "";
 
   try {
-    await userStore.oauthRegister(provider);
+    await userStore.oauthLogin(provider, true);
     message.success("Welcome!  You've successfully signed in.");
     router.push("/");
   } catch (error: any) {

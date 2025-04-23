@@ -4,7 +4,8 @@ import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Dashboard from "../views/Dashboard.vue";
 import { dashboardRoutes } from "./dashboard-routes";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 export const routes = [
   { path: "/", name: "Home", component: Home },
@@ -25,7 +26,6 @@ const router = createRouter({
 });
 router.beforeEach((to, _, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const auth = getAuth();
   const unsubscribe = onAuthStateChanged(auth, (user) => {
     unsubscribe();
     if (requiresAuth && !user) {

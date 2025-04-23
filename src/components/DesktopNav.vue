@@ -7,13 +7,12 @@ import { computed, ref } from "vue";
 const ui = useUIStore();
 const userStore = useUserStore();
 const warningMsg = ref("");
-const userData = computed(() => userStore.userData);
 const visibleRoutes = computed(() => {
   return routes.filter((route) => {
-    if (ui.isLoggedIn && userData.value !== null) {
+    if (ui.isLoggedIn && userStore.userData!== null) {
       warningMsg.value = "";
       return route.name !== "Login" && route.name !== "Register";
-    } else if (ui.isLoggedIn && userData.value === null) {
+    } else if (ui.isLoggedIn && userStore.userData === null) {
       warningMsg.value = "Please register to set up everything!!";
       return route.name === "Register";
     } else {

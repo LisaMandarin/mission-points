@@ -12,7 +12,9 @@
     --color-orange: #FD6D2E;
 }
 
-
+body {
+    background-color: beige;
+}
 .link {
     @apply cursor-pointer hover:underline;
 }
