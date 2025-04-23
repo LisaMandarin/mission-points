@@ -1,6 +1,5 @@
-export type UserDataType = {
-    uid: string;
+export type MissionType = {
+    id: string;
     name: string;
-    role: string;
-    email: string;
+    points: number;
 }
