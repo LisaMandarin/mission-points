@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watchEffect } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import ChildMissionTable from "../components/ChildMissionTable.vue";
 import ParentMissionTable from "../components/ParentMissionTable.vue";
 import { useUserStore } from "../stores/user";
