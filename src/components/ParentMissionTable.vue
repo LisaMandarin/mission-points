@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import type { MissionType } from "../types";
 import { MdOutlineAddCircleOutline } from "vue-icons-plus/md";
 import { ref } from "vue";
 import { collection, addDoc } from "firebase/firestore";
 import { useUserStore } from "../stores/user";
 import { db } from "../firebase";
 import { useUIStore } from "../stores/ui";
-
-defineProps<{
-  missions: MissionType[];
-}>();
+import { useHomeStore } from "../stores/home";
+import { DownOutlined } from "@ant-design/icons-vue";
 
 const userStore = useUserStore();
 const ui = useUIStore();
+const homeStore = useHomeStore();
 const newMission = ref<string>("");
 const newPoints = ref<number>();
 
@@ -53,6 +51,18 @@ const handleAddMission = async (e: Event) => {
   }
   
 };
+
+const handleGrant = (missionID: string, userID: string) => {
+  ui.isLoading = true;
+  try {
+    console.log("Mission ID: ", missionID);
+    console.log("User ID: ", userID);
+  } catch (error) {
+    console.error(error)
+  } finally {
+    ui.isLoading = false;
+  }
+}
 </script>
 
 <template>
@@ -65,10 +75,24 @@ const handleAddMission = async (e: Event) => {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="mission in missions">
+      <tr v-for="mission in homeStore.missions" :key="mission.id" class="even:bg-amber-200">
         <td class="text-center p-2">{{ mission.name }}</td>
         <td class="text-center p-2">{{ mission.points }}</td>
-        <td class="text-center p-2"><button>Grant</button></td>
+        <td class="text-center p-2">
+          <a-dropdown :trigger="['click']" class="cursor-pointer">
+            <a class="ant-dropdown-link" @click.prevent>
+              Grant
+              <DownOutlined />
+            </a>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item v-for="member in homeStore.filteredMembers" :key="member.id">
+                  <button @click="() => handleGrant(mission.id, member.uid)">{{ homeStore.familyMap[member.uid].name }}</button>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </td>
       </tr>
     </tbody>
   </table>

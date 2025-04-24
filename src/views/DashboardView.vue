@@ -9,7 +9,7 @@ const userStore = useUserStore();
 </script>
 
 <template>
-  <div class="div-center md:text-2xl">
+  <div class="flex flex-col items-center md:text-2xl">
     <a-avatar :size="{ xs: 64, sm: 64, md: 120, lg: 120, xl: 200, xxl: 200 }">
       <template #icon><UserOutlined /></template>
     </a-avatar>

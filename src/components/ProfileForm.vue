@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { message } from "ant-design-vue";
 import { useUserStore } from "../stores/user";
 import { useUIStore } from "../stores/ui";
 import { useRouter } from "vue-router";
 import { computed, ref, watchEffect} from "vue";
 import { customAlphabet } from "nanoid";
+import { message } from "ant-design-vue";
 
 const router = useRouter();
 const ui = useUIStore();
@@ -31,6 +31,7 @@ watchEffect(() => {
 const handleSubmit = async (e: Event) => {
   e.preventDefault();
   ui.isLoading = true;
+  errorMsg.value = "";
 
   try {
     if (name.value === "") {
@@ -57,6 +58,7 @@ const handleSubmit = async (e: Event) => {
       homeID: finalHomeID
     }
     await userStore.updateUser(updates);
+
     message.success("User profile updated");
     router.push("/dashboard");
   } catch (error) {

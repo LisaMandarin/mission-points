@@ -3,7 +3,7 @@ import { dashboardRoutes } from '../router/dashboard-routes';
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
+  <div class="w-full flex flex-col">
     <div class="m-auto md:text-2xl">
       <span v-for="(route, index) in dashboardRoutes">
         <router-link :to="'/dashboard/' + route.path">

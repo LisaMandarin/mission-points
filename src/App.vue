@@ -20,9 +20,9 @@ onAuthStateChanged(auth, async(user) => {
 </script>
 
 <template>
-  <div class="bg-beige flex flex-col h-screen font-body">
+  <div class="bg-beige flex flex-col min-h-screen font-body">
     <DesktopNav />
-    <div class="relative flex-grow">
+    <div class="relative flex-grow flex">
       <Loading :loading="ui.isLoading" />
       <router-view />
     </div>

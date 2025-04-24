@@ -9,7 +9,7 @@ const userStore = useUserStore();
 </script>
 
 <template>
-  <div class="div-center">
+  <div class="flex flex-col justify-center items-center w-full">
     <div class="xl:h-[150px]">
       <h1
         class="animate__animated animate__tada text-blue font-extrabold text-5xl xl:text-8xl font-title leading-24 text-center"
