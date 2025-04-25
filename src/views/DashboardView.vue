@@ -20,7 +20,7 @@ const userStore = useUserStore();
     </div>
 
     <div class="flex items-baseline">
-      <h1 class="text-5xl md:text-7xl mt-4">My Home</h1>
+      <h1 class="text-5xl md:text-7xl mt-4 font-goofy">My Home</h1>
       <span class="px-2">
         <router-link :to="'/dashboard/profile'">
           <BiEdit />

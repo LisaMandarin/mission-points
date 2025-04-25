@@ -30,11 +30,11 @@ const homeStore = useHomeStore();
             }}
           </p>
           <p class="text-xs md:text-base">
-            {{ formatTime(application.appliedAt) }}
+            {{ application.appliedAt ? formatTime(application.appliedAt) : ""}}
           </p>
         </td>
         <td class="text-center">
-          <span class="badge {{ application.approved ? badge-success : badge-warning }}">{{ application.approved ? "approved" : "pending" }}</span>
+          <span :class="`badge ${application.approved ? 'badge-success' : 'badge-warning'}`">{{ application.approved ? "approved" : "pending" }}</span>
         </td>
         <td class="text-center space-x-4">
             <RiCheckFill class="inline-block cursor-pointer text-green-600 hover:text-green-400"/>

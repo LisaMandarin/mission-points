@@ -76,7 +76,7 @@ const handleSubmit = async (e: Event) => {
 
 <template>
   <form
-    class="w-[300px] md:w-[700px] mx-auto space-y-4 md:space-y-12 text-2xl md:text-4xl"
+    class="w-[300px] md:w-[700px] mx-auto space-y-4 md:space-y-12 text-2xl md:text-3xl"
     @submit="handleSubmit"
   >
     <div v-if="errorMsg" class="text-red-600 text-center">{{ errorMsg }}</div>

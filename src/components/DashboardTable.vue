@@ -3,6 +3,8 @@ import { computed } from 'vue';
 import { BsHouse } from 'vue-icons-plus/bs';
 import { useUserStore } from '../stores/user';
 import { useHomeStore } from '../stores/home';
+import { RiUser3Fill } from 'vue-icons-plus/ri';
+
 
 const userStore = useUserStore();
 const userData = computed(() => userStore.userData)
@@ -18,19 +20,19 @@ const homeStore = useHomeStore();
                 </tr>
             </thead>
             <tbody>
-                <tr v-if="userData">
-                    <td class="text-center p-2">Me</td>
+                <tr v-if="userData" class="hover:bg-blue-100 transition">
+                    <td class="text-center p-2"><RiUser3Fill class="inline-block align-middle"/>Me</td>
                     <td v-if="userData.name" class="text-center p-2">{{ userData.name }}</td>
                     <td v-else class="text-center p-2">N/A</td>
                     <td v-if="userData.role" class="text-center p-2">{{ userData.role }}</td>
                     <td v-else class="text-center p-2">N/A</td>
                 </tr>
-                <tr v-else>
+                <tr v-else  class="hover:bg-blue-100 transition">
                     <td>Me</td>
                     <td>Loading...</td>
                     <td>Loading...</td>
                 </tr>
-                <tr v-for="member in homeStore.filteredMembers">
+                <tr v-for="member in homeStore.filteredMembers" class="hover:bg-blue-100 transition">
                     <td class="text-center p-2">Other</td>
                     <td class="text-center p-2">{{ member.name }}</td>
                     <td class="text-center p-2">{{ member.role }}</td>

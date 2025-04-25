@@ -7,6 +7,7 @@ import { db } from "../firebase";
 import { useUIStore } from "../stores/ui";
 import { useHomeStore } from "../stores/home";
 import { DownOutlined } from "@ant-design/icons-vue";
+import { message } from "ant-design-vue";
 
 const userStore = useUserStore();
 const ui = useUIStore();
@@ -52,13 +53,27 @@ const handleAddMission = async (e: Event) => {
   
 };
 
-const handleGrant = (missionID: string, userID: string) => {
+const handleGrant = async (missionID: string, userID: string) => {
   ui.isLoading = true;
   try {
-    console.log("Mission ID: ", missionID);
-    console.log("User ID: ", userID);
+    if (!missionID || !userID) throw new Error("Missing missionID or userID")
+    
+    const homeID = homeStore.homeID;
+    const applicationRef = collection(db, "homes", homeID, "pointsApplication");
+    const doc = {
+      missionID: missionID,
+      appliedBy: userID,
+      approvedBy: userStore.userData?.uid,
+      approvedAt: new Date(),
+      approved: true,
+    }
+    await addDoc(applicationRef, doc);
+    const mission = homeStore.missionMap[missionID];
+    const family = homeStore.familyMap[userID];
+    message.success(`${mission.points} points granted to ${family.name} for ${mission.name}`)
   } catch (error) {
     console.error(error)
+    message.error("Failed to grant points.")
   } finally {
     ui.isLoading = false;
   }
@@ -81,8 +96,9 @@ const handleGrant = (missionID: string, userID: string) => {
         <td class="text-center p-2">
           <a-dropdown :trigger="['click']" class="cursor-pointer">
             <a class="ant-dropdown-link" @click.prevent>
-              Grant
-              <DownOutlined />
+              <span class="flex justify-center items-center">Grant
+              <DownOutlined class="text-base" />
+              </span>
             </a>
             <template #overlay>
               <a-menu>

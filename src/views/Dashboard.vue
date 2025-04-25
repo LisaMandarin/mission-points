@@ -4,7 +4,7 @@ import { dashboardRoutes } from '../router/dashboard-routes';
 
 <template>
   <div class="w-full flex flex-col">
-    <div class="m-auto md:text-2xl">
+    <div class="m-auto mb-4 md:text-2xl">
       <span v-for="(route, index) in dashboardRoutes">
         <router-link :to="'/dashboard/' + route.path">
           <span class="px-2 hover:underline cursor-pointer">{{ `${route.name}` }}</span>
