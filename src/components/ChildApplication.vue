@@ -1,12 +1,63 @@
 <script setup lang="ts">
+import { ref, watchEffect } from 'vue';
 import { useHomeStore } from '../stores/home';
 import formatTime from '../utils/formatTime';
 import { IpReturn } from 'vue-icons-plus/ip';
+import ApplicationFilter from './ApplicationFilter.vue';
+import DirectionFilter from './DirectionFilter.vue';
 
 const homeStore = useHomeStore();
+const filteredApplications = ref();
+const selectedFilter = ref("");
+const selectedDirection = ref(true);
+
+const handleSelectedFilter = (filter: string) => {
+    selectedFilter.value = filter;
+    handleFilter()
+}
+
+const handleSelectedDirection = (isIncrement: boolean) => {
+    selectedDirection.value = isIncrement;
+    handleFilter()
+}
+
+const handleFilter = () => {
+    const newApplications = [...homeStore.applicationsByUser];
+    if (selectedFilter.value === "") {
+        filteredApplications.value = newApplications
+    } else if (selectedFilter.value === "time") {
+        filteredApplications.value = newApplications.sort((a, b) => {
+            const aTime = a.appliedAt?.toDate().getTime() ?? 0;
+            const bTime = b.appliedAt?.toDate().getTime() ?? 0;
+            return selectedDirection.value ? bTime - aTime : aTime - bTime;
+        })
+    } else if (selectedFilter.value === "name") {
+        filteredApplications.value = newApplications.sort((a, b) => {
+            const aName = a.approvedBy ?? "";
+            const bName = b.approvedBy ?? "";
+            return selectedDirection.value ? bName.localeCompare(aName) : aName.localeCompare(bName);
+        })
+    } else if (selectedFilter.value === "status") {
+        filteredApplications.value = newApplications.sort((a, b) => {
+            const aStatus = a.approved === true ? 1 : 0;
+            const bStatus = b.approved === true ? 1 : 0;
+            return selectedDirection.value ? bStatus - aStatus : aStatus - bStatus;
+        })
+    }
+}
+
+watchEffect(() => {
+    if (homeStore.applicationsByUser.length > 0) {
+        filteredApplications.value =[...homeStore.applicationsByUser]
+    }
+})
 </script>
 
 <template>
+    <div class="space-x-2 my-2">
+        <ApplicationFilter @update:filter="handleSelectedFilter" />
+        <DirectionFilter @update:isIncrement="handleSelectedDirection" />
+    </div>
     <table class="applicaton w-full border-2 border-blue md:text-2xl">
         <thead class="bg-blue text-white">
             <tr class="align-top">
@@ -17,7 +68,7 @@ const homeStore = useHomeStore();
             </tr>
         </thead>
         <tbody>
-            <tr v-if="homeStore.applicationsByUser" v-for="application in homeStore.applicationsByUser" :key="application.id" class="even:bg-amber-200">
+            <tr v-if="filteredApplications" v-for="application in filteredApplications" :key="application.id" class="even:bg-amber-200">
                 <td class="text-center">
                     <div>
                         <p class="font-semibold">{{ homeStore.missionMap[application.missionID].name }}</p>
