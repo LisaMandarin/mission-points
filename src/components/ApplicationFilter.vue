@@ -9,7 +9,7 @@ watch(selectedFilter, (newVal) => {
 })
 </script>
 <template>
-  <select class="cursor-pointer px-2 py-1 border border-blue rounded-md mb-2" v-model="selectedFilter" >
+  <select class="cursor-pointer px-2 py-1 border border-blue rounded-md" v-model="selectedFilter" >
     <option value="">filtered by</option>
     <option value="time">time</option>
     <option value="name">name</option>
