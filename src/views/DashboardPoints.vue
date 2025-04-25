@@ -29,8 +29,9 @@ const userData = computed(() => userStore.userData);
     </template>
   </div>
 
-  <div class="w-[300px] md:w-[600px] mx-auto mb-4">
+  <div class="w-[300px] sm:w-[600px] overflow-auto mx-auto mb-4">
     <h1 class="text-center text-4xl">Application History</h1>
+    
     <template v-if="userData?.role === 'child'">
       <ChildApplication />
     </template>

@@ -7,7 +7,7 @@ const homeStore = useHomeStore();
 </script>
 
 <template>
-    <table class="w-full border-2 border-blue md:text-2xl">
+    <table class="applicaton w-full border-2 border-blue md:text-2xl">
         <thead class="bg-blue text-white">
             <tr class="align-top">
                 <th class="px-2">Mission</th>
@@ -21,11 +21,11 @@ const homeStore = useHomeStore();
                 <td class="text-center">
                     <div>
                         <p class="font-semibold">{{ homeStore.missionMap[application.missionID].name }}</p>
-                        <p class="text-xs md:text-base">{{ formatTime(application.appliedAt) }}</p>
+                        <p class="text-xs md:text-base">{{ application.appliedAt ? formatTime(application.appliedAt) : "" }}</p>
                     </div>
                 </td>
-                <td class="text-center">{{ application.approvedBy ? "person" : "N/A" }}</td>
-                <td class="text-center"><span class="badge {{ application.approved ? badge-success : badge-warning }}">{{ application.approved ? "approved" : "pending"}}</span></td>
+                <td class="text-center">{{ application.approvedBy ?  homeStore.familyMap[application.approvedBy].name : "N/A" }}</td>
+                <td class="text-center"><span :class="`badge ${application.approved ?'badge-success' : 'badge-warning'}`">{{ application.approved ? "approved" : "pending"}}</span></td>
                 <td class="text-center">
                     <button class="bg-orange text-white px-2 py-1 rounded-md text-base hover:text-blue cursor-pointer">
                         <IpReturn class="inline-block"/>

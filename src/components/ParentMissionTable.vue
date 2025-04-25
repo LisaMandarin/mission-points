@@ -57,7 +57,7 @@ const handleGrant = async (missionID: string, userID: string) => {
   ui.isLoading = true;
   try {
     if (!missionID || !userID) throw new Error("Missing missionID or userID")
-    
+
     const homeID = homeStore.homeID;
     const applicationRef = collection(db, "homes", homeID, "pointsApplication");
     const doc = {
@@ -78,6 +78,7 @@ const handleGrant = async (missionID: string, userID: string) => {
     ui.isLoading = false;
   }
 }
+
 </script>
 
 <template>

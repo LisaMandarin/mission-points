@@ -20,5 +20,9 @@ body {
     @apply cursor-pointer hover:underline;
 }
 .div-center {
-    @apply h-full flex flex-col justify-center items-center
+    @apply h-full flex flex-col justify-center items-center;
+}
+
+.application td {
+    @apply py-2
 }
