@@ -54,31 +54,31 @@ const handleAddMission = async (e: Event) => {
 };
 
 const handleGrant = async (missionID: string, userID: string) => {
-  ui.isLoading = true;
-  try {
-    if (!missionID || !userID) throw new Error("Missing missionID or userID")
-
-    const homeID = homeStore.homeID;
-    const applicationRef = collection(db, "homes", homeID, "pointsApplication");
-    const doc = {
-      missionID: missionID,
-      appliedBy: userID,
-      approvedBy: userStore.userData?.uid,
-      approvedAt: new Date(),
-      approved: true,
+    ui.isLoading = true;
+    try {
+      if (!missionID || !userID) throw new Error("Missing missionID or userID")
+  
+      const homeID = homeStore.homeID;
+      const applicationRef = collection(db, "homes", homeID, "pointsApplication");
+      const payload = {
+        missionID: missionID,
+        appliedBy: userID,
+        appliedAt: new Date(),
+        approvedBy: userStore.userData?.uid,
+        approvedAt: new Date(),
+        approved: true,
+      }
+      await addDoc(applicationRef, payload);
+      const mission = homeStore.missionMap[missionID];
+      const family = homeStore.familyMap[userID];
+      message.success(`${mission.points} points granted to ${family.name} for ${mission.name}`)
+    } catch (error) {
+      console.error(error)
+      message.error("Failed to grant points.")
+    } finally {
+      ui.isLoading = false;
     }
-    await addDoc(applicationRef, doc);
-    const mission = homeStore.missionMap[missionID];
-    const family = homeStore.familyMap[userID];
-    message.success(`${mission.points} points granted to ${family.name} for ${mission.name}`)
-  } catch (error) {
-    console.error(error)
-    message.error("Failed to grant points.")
-  } finally {
-    ui.isLoading = false;
   }
-}
-
 </script>
 
 <template>

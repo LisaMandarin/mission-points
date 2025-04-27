@@ -8,10 +8,10 @@ export type MissionType = {
 
 export type PointsApplicationType = {
     id: string;
+    missionID: string;  
     appliedAt: Timestamp;
     appliedBy?: string;
     approved: boolean;
-    missionID: string;  
     approvedBy?: string;
     approvedAt?: Timestamp;
 }
