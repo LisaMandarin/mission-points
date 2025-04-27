@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref, computed } from "vue";
 import { useHomeStore } from "../stores/home";
 import formatTime from "../utils/formatTime";
 import { IpReturn } from "vue-icons-plus/ip";
@@ -11,33 +11,19 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { useUIStore } from "../stores/ui";
 
 const homeStore = useHomeStore();
-const filteredApplications = ref();
-const selectedFilter = ref("");
-const selectedDirection = ref(true);
-const ui = useUIStore();
-
-const handleSelectedFilter = (filter: string) => {
-  selectedFilter.value = filter;
-  handleFilter();
-};
-
-const handleSelectedDirection = (isIncrement: boolean) => {
-  selectedDirection.value = isIncrement;
-  handleFilter();
-};
-
-const handleFilter = () => {
+const filteredApplications = computed(() => {
   const newApplications = [...homeStore.applicationsByUser];
+
   if (selectedFilter.value === "") {
-    filteredApplications.value = newApplications;
+    return newApplications;
   } else if (selectedFilter.value === "time") {
-    filteredApplications.value = newApplications.sort((a, b) => {
+    return newApplications.sort((a, b) => {
       const aTime = a.appliedAt?.toDate().getTime() ?? 0;
       const bTime = b.appliedAt?.toDate().getTime() ?? 0;
       return selectedDirection.value ? bTime - aTime : aTime - bTime;
     });
   } else if (selectedFilter.value === "name") {
-    filteredApplications.value = newApplications.sort((a, b) => {
+    return newApplications.sort((a, b) => {
       const aName = a.approvedBy ?? "";
       const bName = b.approvedBy ?? "";
       return selectedDirection.value
@@ -45,13 +31,18 @@ const handleFilter = () => {
         : aName.localeCompare(bName);
     });
   } else if (selectedFilter.value === "status") {
-    filteredApplications.value = newApplications.sort((a, b) => {
+    return newApplications.sort((a, b) => {
       const aStatus = a.approved === true ? 1 : 0;
       const bStatus = b.approved === true ? 1 : 0;
       return selectedDirection.value ? bStatus - aStatus : aStatus - bStatus;
     });
+  } else {
+    return newApplications;
   }
-};
+});
+const selectedFilter = ref("");
+const selectedDirection = ref(true);
+const ui = useUIStore();
 
 const undoMission = async (applicationID: string) => {
     ui.isLoading = true;
@@ -75,17 +66,17 @@ const undoMission = async (applicationID: string) => {
   }
 };
 
-watchEffect(() => {
-  if (homeStore.applicationsByUser.length > 0) {
-    filteredApplications.value = [...homeStore.applicationsByUser];
-  }
-});
+// watchEffect(() => {
+//   if (homeStore.applicationsByUser.length > 0) {
+//     filteredApplications.value = [...homeStore.applicationsByUser];
+//   }
+// });
 </script>
 
 <template>
   <div class="space-x-2 my-2">
-    <ApplicationFilter @update:filter="handleSelectedFilter" />
-    <DirectionFilter @update:isIncrement="handleSelectedDirection" />
+    <ApplicationFilter v-model:modelValue="selectedFilter" />
+    <DirectionFilter v-model:modelValue="selectedDirection" />
   </div>
   <table class="applicaton w-full border-2 border-blue md:text-2xl">
     <thead class="bg-blue text-white">

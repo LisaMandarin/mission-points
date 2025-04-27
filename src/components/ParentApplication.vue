@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { computed, ref } from "vue";
 import { RiCheckFill, RiDeleteBin5Line } from "vue-icons-plus/ri";
 import { message } from "ant-design-vue";
 import formatTime from "../utils/formatTime";
@@ -10,7 +10,6 @@ import { db } from "../firebase";
 import { useUIStore } from "../stores/ui";
 import { useUserStore } from "../stores/user";
 import { useHomeStore } from "../stores/home";
-import type { PointsApplicationType } from "../types";
 
 // store
 const ui = useUIStore();
@@ -18,47 +17,35 @@ const userStore = useUserStore();
 const homeStore = useHomeStore();
 
 // local state
-const filteredApplications = ref<PointsApplicationType[]>([]);
-const selectedFilter = ref("");
-const selectedDirection = ref(true);
-
-// handlers
-const handleSelectedFilter = (field: string) => {
-  selectedFilter.value = field;
-  handleFilter();
-};
-
-const handleSelectedDirection = (isIncrement: boolean) => {
-  selectedDirection.value = isIncrement;
-  handleFilter();
-};
-
-const handleFilter = () => {
+const filteredApplications = computed(() => {
   const newApplications = [...homeStore.applications];
+
   if (selectedFilter.value === "") {
-    filteredApplications.value = newApplications;
+    return newApplications;
   } else if (selectedFilter.value === "time") {
-    filteredApplications.value = newApplications.sort((a, b) => {
+    return newApplications.sort((a, b) => {
       const aTime = a.appliedAt?.toDate().getTime() ?? 0;
       const bTime = b.appliedAt?.toDate().getTime() ?? 0;
-      return selectedDirection.value ? bTime - aTime : aTime - bTime;
+      return selectedDirection.value ? bTime -aTime : aTime - bTime;
     });
-  } else if (selectedFilter.value === "name") {
-    filteredApplications.value = newApplications.sort((a, b) => {
+  } else if (selectedFilter.value === 'name') {
+    return newApplications.sort((a, b) => {
       const aName = a.appliedBy ?? "";
       const bName = b.appliedBy ?? "";
-      return selectedDirection.value
-        ? bName.localeCompare(aName)
-        : aName.localeCompare(bName);
-    });
-  } else if (selectedFilter.value === "status") {
-    filteredApplications.value = newApplications.sort((a, b) => {
+      return selectedDirection.value ? bName.localeCompare(aName) : aName.localeCompare(bName);
+    })
+  } else if (selectedFilter.value === 'status') {
+    return newApplications.sort((a, b) => {
       const aStatus = a.approved === true ? 1 : 0;
       const bStatus = b.approved === true ? 1 : 0;
       return selectedDirection.value ? bStatus - aStatus : aStatus - bStatus;
-    });
+    })
+  } else {
+    return newApplications;
   }
-};
+}) 
+const selectedFilter = ref("");
+const selectedDirection = ref(true);
 
 const deleteApplication = async (applicationID: string) => {
   ui.isLoading = true;
@@ -104,18 +91,12 @@ const grantApplication = async (applicationID: string) => {
     ui.isLoading = false;
   }
 }
-
-watchEffect(() => {
-  if (homeStore.applications.length > 0) {
-    handleFilter();
-  }
-});
 </script>
 
 <template>
   <div class="space-x-2 my-2">
-    <ApplicationFilter @update:filter="handleSelectedFilter" />
-    <DirectionFilter @update:isIncrement="handleSelectedDirection" />
+    <ApplicationFilter v-model:modelValue="selectedFilter" />
+    <DirectionFilter v-model:modelValue="selectedDirection" />
   </div>
   <table class="application w-full border-2 border-blue md:text-2xl">
     <thead class="bg-blue text-white">

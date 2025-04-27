@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-const emit = defineEmits(['update:isIncrement'])
+const emit = defineEmits<{
+    (e: 'update:modelValue', value: boolean): void;
+}>()
 const isIncrement = ref(true);
 
 watch(isIncrement, (newVal) => {
-    emit('update:isIncrement', newVal)
+    emit('update:modelValue', newVal)
 })
 </script>
 <template>

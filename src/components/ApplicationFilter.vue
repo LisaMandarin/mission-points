@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, defineEmits, watch } from 'vue';
 
-const emit = defineEmits(["update:filter"]);
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void;
+}>();
 const selectedFilter = ref("");
 
 watch(selectedFilter, (newVal) => {
-  emit('update:filter', newVal);
+  emit('update:modelValue', newVal);
 })
 </script>
 <template>
