@@ -12,7 +12,7 @@ import { dashboardRoutes } from '../router/dashboard-routes';
         <span v-if="index !== dashboardRoutes.length -1">|</span>
       </span>
     </div>
-    <div class="flex-grow">
+    <div class="flex-grow space-y-8">
       <router-view></router-view>
     </div>
   </div>

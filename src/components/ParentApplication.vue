@@ -26,7 +26,7 @@ const filteredApplications = computed(() => {
     return newApplications.sort((a, b) => {
       const aTime = a.appliedAt?.toDate().getTime() ?? 0;
       const bTime = b.appliedAt?.toDate().getTime() ?? 0;
-      return selectedDirection.value ? bTime -aTime : aTime - bTime;
+      return selectedDirection.value ? aTime - bTime : bTime - aTime;
     });
   } else if (selectedFilter.value === 'name') {
     return newApplications.sort((a, b) => {
@@ -38,7 +38,7 @@ const filteredApplications = computed(() => {
     return newApplications.sort((a, b) => {
       const aStatus = a.approved === true ? 1 : 0;
       const bStatus = b.approved === true ? 1 : 0;
-      return selectedDirection.value ? bStatus - aStatus : aStatus - bStatus;
+      return selectedDirection.value ? aStatus - bStatus : bStatus - aStatus;
     })
   } else {
     return newApplications;

@@ -71,17 +71,16 @@ export const useHomeStore = defineStore("home", () => {
 
     const appRef = collection(db, "homes", homeID.value, "pointsApplication");
     onSnapshot(appRef, (query) => {
-      applications.value = query.docs.map((doc) => ({
-        id: doc.id,
-        missionID: doc.data().missionID,
-        appliedBy: doc.data().appliedBy,
-        appliedAt: doc.data().appliedAt,
-        approved: doc.data().approved,
-        approvedBy: doc.data().approvedBy,
-        approvedAt: doc.data().approvedAt,
-      }));
+      applications.value = query.docs.map((doc) => {
+        const data = doc.data() as Omit<PointsApplicationType, 'id'>;
+        return {
+          id: doc.id,
+          ...data,
+        };
+      });
     });
   };
+
   watchEffect(() => {
     if (homeID.value) {
       fetchFamilyMembers();

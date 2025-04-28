@@ -67,6 +67,7 @@ const handleGrant = async (missionID: string, userID: string) => {
         approvedBy: userStore.userData?.uid,
         approvedAt: new Date(),
         approved: true,
+        redeemed: false,
       }
       await addDoc(applicationRef, payload);
       const mission = homeStore.missionMap[missionID];

@@ -29,6 +29,7 @@ const handleApply = async (missionID: string) => {
       appliedBy,
       appliedAt,
       approved: false,
+      redeemed: false,
     });
     message.success("Application sent");
   } catch (error) {

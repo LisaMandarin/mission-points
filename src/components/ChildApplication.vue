@@ -20,7 +20,7 @@ const filteredApplications = computed(() => {
     return newApplications.sort((a, b) => {
       const aTime = a.appliedAt?.toDate().getTime() ?? 0;
       const bTime = b.appliedAt?.toDate().getTime() ?? 0;
-      return selectedDirection.value ? bTime - aTime : aTime - bTime;
+      return selectedDirection.value ? aTime - bTime : bTime - aTime;
     });
   } else if (selectedFilter.value === "name") {
     return newApplications.sort((a, b) => {
@@ -34,7 +34,7 @@ const filteredApplications = computed(() => {
     return newApplications.sort((a, b) => {
       const aStatus = a.approved === true ? 1 : 0;
       const bStatus = b.approved === true ? 1 : 0;
-      return selectedDirection.value ? bStatus - aStatus : aStatus - bStatus;
+      return selectedDirection.value ? aStatus - bStatus : bStatus - aStatus;
     });
   } else {
     return newApplications;
@@ -45,8 +45,8 @@ const selectedDirection = ref(true);
 const ui = useUIStore();
 
 const undoMission = async (applicationID: string) => {
-    ui.isLoading = true;
-    try {
+  ui.isLoading = true;
+  try {
     if (!applicationID) {
       throw new Error("Invalid application ID");
     }
@@ -129,12 +129,16 @@ const undoMission = async (applicationID: string) => {
           >
         </td>
         <td class="text-center">
-          <button
-            class="bg-orange text-white px-2 py-1 rounded-md text-base hover:text-blue cursor-pointer"
-            @click="undoMission(application.id)"
+          <a-popconfirm
+            title="Are you sure to cancel the application?"
+            ok-text="Yes"
+            calcel-text="No"
+            @confirm="undoMission(application.id)"
           >
-            <IpReturn class="inline-block" />
-          </button>
+            <button class="bg-orange text-white px-2 py-1 rounded-md text-base hover:text-blue cursor-pointer">
+              <IpReturn class="inline-block" />
+            </button>
+          </a-popconfirm>
         </td>
       </tr>
       <tr v-else>

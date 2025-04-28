@@ -1,6 +1,7 @@
 import DashboardView from "../views/DashboardView.vue";
 import DashboardProfile from "../views/DashboardProfile.vue";
 import DashboardPoints from "../views/DashboardPoints.vue";
+import DashboardPrize from "../views/DashboardPrize.vue";
 
 export const dashboardRoutes = [
   {
@@ -11,14 +12,20 @@ export const dashboardRoutes = [
   },
   {
     path: "profile",
-    name: "Edit Profile",
+    name: "Profile",
     component: DashboardProfile,
     meta: { requiresAuth: true },
   },
   {
     path: "points",
-    name: "Manage Points",
+    name: "Points",
     component: DashboardPoints,
     meta: { requiresAuth: true },
   },
+  {
+    path: "prizes",
+    name: "Prizes",
+    component: DashboardPrize,
+    meta: { requiresAuth: true },
+  }
 ];

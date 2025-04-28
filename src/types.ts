@@ -14,4 +14,5 @@ export type PointsApplicationType = {
     approved: boolean;
     approvedBy?: string;
     approvedAt?: Timestamp;
+    redeemed?: boolean;
 }
