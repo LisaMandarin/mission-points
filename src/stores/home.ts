@@ -9,7 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import type { MissionType, PointsApplicationType } from "../types";
+import type { MissionType, PointsApplicationType, PrizeType } from "../types";
 
 export const useHomeStore = defineStore("home", () => {
   const userStore = useUserStore();
@@ -33,6 +33,9 @@ export const useHomeStore = defineStore("home", () => {
     applications.value.filter((application) => application.appliedBy === userStore.userData?.uid)
   )
   const missionMap = ref<Record<string, MissionType>>({});
+
+  const prizes = ref<PrizeType[]>([]);
+  const prizeMap = ref<Record<string, PrizeType>>({})
 
   const fetchFamilyMembers = async () => {
     if (!homeID.value) return;
@@ -81,11 +84,31 @@ export const useHomeStore = defineStore("home", () => {
     });
   };
 
+  const listenToPrizes = () => {
+    if (!homeID.value) return;
+
+    const prizeRef = collection(db, "homes", homeID.value, "prizes");
+    onSnapshot(prizeRef, (query) => {
+      prizes.value = query.docs.map((doc) => {
+        const data = doc.data() as Omit<PrizeType, 'id'>;
+        return {
+          id: doc.id,
+          ...data,
+        }
+      })
+      prizeMap.value = prizes.value.reduce<Record<string, PrizeType>>((acc, cur) => {
+        acc[cur.id] = cur;
+        return acc;
+      }, {})
+    })
+  }
+
   watchEffect(() => {
     if (homeID.value) {
       fetchFamilyMembers();
       listenToMissions();
       listenToApplications();
+      listenToPrizes();
     }
   });
 
@@ -98,8 +121,11 @@ export const useHomeStore = defineStore("home", () => {
     missionMap,
     applications,
     applicationsByUser,
+    prizes,
+    prizeMap,
     fetchFamilyMembers,
     listenToMissions,
-    listenToApplications
+    listenToApplications,
+    listenToPrizes,
 };
 });

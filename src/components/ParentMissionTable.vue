@@ -37,49 +37,49 @@ const handleAddMission = async (e: Event) => {
 
   try {
     await addDoc(collection(db, "homes", homeID, "missions"), {
-        name: newMission.value,
-        points: newPoints.value,
-        createdAt: new Date()
-    })
-    
-    console.log('Mission added')
+      name: newMission.value,
+      points: newPoints.value,
+      createdAt: new Date(),
+    });
+
     newMission.value = "";
     newPoints.value = 0;
   } catch (error) {
-    console.error("Failed to add a mission: ", error)
+    console.error("Failed to add a mission: ", error);
   } finally {
     ui.isLoading = false;
   }
-  
 };
 
 const handleGrant = async (missionID: string, userID: string) => {
-    ui.isLoading = true;
-    try {
-      if (!missionID || !userID) throw new Error("Missing missionID or userID")
-  
-      const homeID = homeStore.homeID;
-      const applicationRef = collection(db, "homes", homeID, "pointsApplication");
-      const payload = {
-        missionID: missionID,
-        appliedBy: userID,
-        appliedAt: new Date(),
-        approvedBy: userStore.userData?.uid,
-        approvedAt: new Date(),
-        approved: true,
-        redeemed: false,
-      }
-      await addDoc(applicationRef, payload);
-      const mission = homeStore.missionMap[missionID];
-      const family = homeStore.familyMap[userID];
-      message.success(`${mission.points} points granted to ${family.name} for ${mission.name}`)
-    } catch (error) {
-      console.error(error)
-      message.error("Failed to grant points.")
-    } finally {
-      ui.isLoading = false;
-    }
+  ui.isLoading = true;
+  try {
+    if (!missionID || !userID) throw new Error("Missing missionID or userID");
+
+    const homeID = homeStore.homeID;
+    const applicationRef = collection(db, "homes", homeID, "pointsApplication");
+    const payload = {
+      missionID: missionID,
+      appliedBy: userID,
+      appliedAt: new Date(),
+      approvedBy: userStore.userData?.uid,
+      approvedAt: new Date(),
+      approved: true,
+      redeemed: false,
+    };
+    await addDoc(applicationRef, payload);
+    const mission = homeStore.missionMap[missionID];
+    const family = homeStore.familyMap[userID];
+    message.success(
+      `${mission.points} points granted to ${family.name} for ${mission.name}`
+    );
+  } catch (error) {
+    console.error(error);
+    message.error("Failed to grant points.");
+  } finally {
+    ui.isLoading = false;
   }
+};
 </script>
 
 <template>
@@ -92,20 +92,30 @@ const handleGrant = async (missionID: string, userID: string) => {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="mission in homeStore.missions" :key="mission.id" class="even:bg-amber-200">
+      <tr
+        v-for="mission in homeStore.missions"
+        :key="mission.id"
+        class="even:bg-amber-200"
+      >
         <td class="text-center p-2">{{ mission.name }}</td>
         <td class="text-center p-2">{{ mission.points }}</td>
         <td class="text-center p-2">
           <a-dropdown :trigger="['click']" class="cursor-pointer">
             <a class="ant-dropdown-link" @click.prevent>
-              <span class="flex justify-center items-center">Grant
-              <DownOutlined class="text-base" />
+              <span class="flex justify-center items-center"
+                >Grant
+                <DownOutlined class="text-base" />
               </span>
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item v-for="member in homeStore.filteredMembers" :key="member.id">
-                  <button @click="() => handleGrant(mission.id, member.uid)">{{ homeStore.familyMap[member.uid].name }}</button>
+                <a-menu-item
+                  v-for="member in homeStore.filteredMembers"
+                  :key="member.id"
+                >
+                  <button @click="() => handleGrant(mission.id, member.uid)">
+                    {{ homeStore.familyMap[member.uid].name }}
+                  </button>
                 </a-menu-item>
               </a-menu>
             </template>

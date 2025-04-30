@@ -16,3 +16,11 @@ export type PointsApplicationType = {
     approvedAt?: Timestamp;
     redeemed?: boolean;
 }
+
+
+export type PrizeType = {
+    id: string;
+    name: string;
+    cost: number;
+    createdAt: Timestamp;
+}
