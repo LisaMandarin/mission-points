@@ -7,7 +7,7 @@ const pointsByMembers = computed(() => {
   const result: Record<string, any> = {};
   homeStore.filteredMembers.forEach((member) => {
     const appsByMember = homeStore.applications.filter(
-      (app) => app.appliedBy === member.id && app.redeemed === false && app.approved == true
+      (app) => app.appliedBy === member.id && app.approved == true
     );
     const totalPoints = appsByMember.reduce((acc, app) => {
       return acc + (homeStore.missionMap[app.missionID]?.points || 0);

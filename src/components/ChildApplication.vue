@@ -66,11 +66,6 @@ const undoMission = async (applicationID: string) => {
   }
 };
 
-// watchEffect(() => {
-//   if (homeStore.applicationsByUser.length > 0) {
-//     filteredApplications.value = [...homeStore.applicationsByUser];
-//   }
-// });
 </script>
 
 <template>

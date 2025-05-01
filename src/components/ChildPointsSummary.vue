@@ -6,13 +6,13 @@ import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
 const homeStore = useHomeStore();
 const totalPoints = computed(() => {
-  const unredeemedApps = homeStore.applicationsByUser.filter(
-    (app) => app.redeemed === false && app.approved === true
+  const apps = homeStore.applicationsByUser.filter(
+    (app) => app.approved === true
   );
-  if (unredeemedApps.length === 0) {
+  if (apps.length === 0) {
     return 0;
   }
-  return unredeemedApps.reduce((acc, app) => {
+  return apps.reduce((acc, app) => {
     return acc + (homeStore.missionMap[app.missionID]?.points || 0);
   }, 0);
 });

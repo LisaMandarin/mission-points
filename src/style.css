@@ -26,3 +26,7 @@ body {
 .application td {
     @apply py-2
 }
+
+.redemption td {
+    @apply py-2
+}
